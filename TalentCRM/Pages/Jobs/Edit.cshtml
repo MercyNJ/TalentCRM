@@ -1,0 +1,82 @@
+@page "{id:int?}"
+@model TalentCRM.Pages.Jobs.EditModel
+@{
+    ViewData["Title"] = Model.IsNew ? "New job" : $"Edit {Model.Job.Title}";
+}
+
+<div class="page-head">
+    <h1>@ViewData["Title"]</h1>
+</div>
+
+@if (Model.ClientOptions.Count == 0)
+{
+    <div class="card">
+        <p>You need a client before you can add a job.</p>
+        <p><a class="btn btn-primary" asp-page="/Clients/Edit">+ Add a client</a></p>
+    </div>
+}
+else
+{
+    <form method="post" class="card form">
+        <div asp-validation-summary="ModelOnly" class="errors"></div>
+        <input type="hidden" asp-for="Job.Id" />
+
+        <div class="form-grid">
+            <div class="field span-2">
+                <label asp-for="Job.Title"></label>
+                <input asp-for="Job.Title" />
+                <span asp-validation-for="Job.Title" class="error"></span>
+            </div>
+            <div class="field">
+                <label asp-for="Job.ClientId"></label>
+                <select asp-for="Job.ClientId" asp-items="Model.ClientOptions">
+                    <option value="0">Choose a client</option>
+                </select>
+                <span asp-validation-for="Job.ClientId" class="error"></span>
+            </div>
+            <div class="field">
+                <label asp-for="Job.Location"></label>
+                <input asp-for="Job.Location" placeholder="e.g. Nairobi (hybrid)" />
+                <span asp-validation-for="Job.Location" class="error"></span>
+            </div>
+            <div class="field">
+                <label asp-for="Job.EmploymentType"></label>
+                <select asp-for="Job.EmploymentType" asp-items="SelectLists.For<EmploymentType>()"></select>
+            </div>
+            <div class="field">
+                <label asp-for="Job.Openings"></label>
+                <input asp-for="Job.Openings" min="1" max="100" />
+                <span asp-validation-for="Job.Openings" class="error"></span>
+            </div>
+            <div class="field">
+                <label asp-for="Job.SalaryMin"></label>
+                <input asp-for="Job.SalaryMin" step="1000" min="0" />
+                <span asp-validation-for="Job.SalaryMin" class="error"></span>
+            </div>
+            <div class="field">
+                <label asp-for="Job.SalaryMax"></label>
+                <input asp-for="Job.SalaryMax" step="1000" min="0" />
+                <span asp-validation-for="Job.SalaryMax" class="error"></span>
+            </div>
+            <div class="field span-2">
+                <label asp-for="Job.RequiredSkills"></label>
+                <input asp-for="Job.RequiredSkills" placeholder="C#, SQL, Azure" />
+                <span asp-validation-for="Job.RequiredSkills" class="error"></span>
+            </div>
+            <div class="field span-2">
+                <label asp-for="Job.Description"></label>
+                <textarea asp-for="Job.Description" rows="4"></textarea>
+                <span asp-validation-for="Job.Description" class="error"></span>
+            </div>
+            <div class="field">
+                <label asp-for="Job.Status"></label>
+                <select asp-for="Job.Status" asp-items="SelectLists.For<JobStatus>()"></select>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">@(Model.IsNew ? "Create job" : "Save changes")</button>
+            <a class="btn btn-link" asp-page="Index">Cancel</a>
+        </div>
+    </form>
+}

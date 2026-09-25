@@ -1,0 +1,37 @@
+﻿@model List<ApplicationRow>
+
+@if (Model.Count == 0)
+{
+    <p class="muted">No applications yet.</p>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Candidate</th>
+                    <th>Job</th>
+                    <th>Client</th>
+                    <th>Stage</th>
+                    <th>Updated</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in Model)
+                {
+                    <tr>
+                        <td><a asp-page="/Candidates/Details" asp-route-id="@row.Candidate.Id">@row.Candidate.FullName</a></td>
+                        <td><a asp-page="/Jobs/Details" asp-route-id="@row.Job.Id">@row.Job.Title</a></td>
+                        <td>@row.Client.CompanyName</td>
+                        <td>
+                            <a asp-page="/Applications/Details" asp-route-id="@row.Application.Id"
+                               class="@row.Application.Stage.BadgeClass()">@row.Application.Stage.ToDisplay()</a>
+                        </td>
+                        <td class="muted">@row.Application.StageChangedAt.ToString("d MMM yyyy")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

@@ -1,0 +1,63 @@
+﻿@page "{id:int?}"
+@model TalentCRM.Pages.Interviews.EditModel
+@{
+    ViewData["Title"] = Model.IsNew ? "Schedule interview" : "Edit interview";
+    var row = Model.For!;
+}
+
+<div class="page-head">
+    <div>
+        <h1>@ViewData["Title"]</h1>
+        <p class="muted">
+            <a asp-page="/Candidates/Details" asp-route-id="@row.Candidate.Id">@row.Candidate.FullName</a>
+            for <a asp-page="/Jobs/Details" asp-route-id="@row.Job.Id">@row.Job.Title</a> · @row.Client.CompanyName
+        </p>
+    </div>
+</div>
+
+<form method="post" class="card form">
+    <div asp-validation-summary="ModelOnly" class="errors"></div>
+    <input type="hidden" asp-for="Interview.Id" />
+    <input type="hidden" asp-for="Interview.ApplicationId" />
+
+    <div class="form-grid">
+        <div class="field">
+            <label asp-for="Interview.ScheduledAt"></label>
+            @* For a DateTime property, asp-for creates <input type="datetime-local">, the browser's date picker. *@
+            <input asp-for="Interview.ScheduledAt" />
+            <span asp-validation-for="Interview.ScheduledAt" class="error"></span>
+        </div>
+        <div class="field">
+            <label asp-for="Interview.DurationMinutes"></label>
+            <input asp-for="Interview.DurationMinutes" min="15" max="480" step="15" />
+            <span asp-validation-for="Interview.DurationMinutes" class="error"></span>
+        </div>
+        <div class="field">
+            <label asp-for="Interview.Type"></label>
+            <select asp-for="Interview.Type" asp-items="SelectLists.For<InterviewType>()"></select>
+        </div>
+        <div class="field">
+            <label asp-for="Interview.Interviewer"></label>
+            <input asp-for="Interview.Interviewer" placeholder="Who is interviewing?" />
+            <span asp-validation-for="Interview.Interviewer" class="error"></span>
+        </div>
+
+        @if (!Model.IsNew)
+        {
+            <div class="field">
+                <label asp-for="Interview.Outcome"></label>
+                <select asp-for="Interview.Outcome" asp-items="SelectLists.For<InterviewOutcome>()"></select>
+            </div>
+            <div class="field span-2">
+                <label asp-for="Interview.Feedback"></label>
+                <textarea asp-for="Interview.Feedback" rows="4" placeholder="How did it go?"></textarea>
+                <span asp-validation-for="Interview.Feedback" class="error"></span>
+            </div>
+        }
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">@(Model.IsNew ? "Schedule" : "Save")</button>
+        <a class="btn btn-link" asp-page="/Applications/Details" asp-route-id="@Model.Interview.ApplicationId">Cancel</a>
+    </div>
+</form>

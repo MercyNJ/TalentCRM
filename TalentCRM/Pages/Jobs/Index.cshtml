@@ -1,0 +1,22 @@
+@page
+@model TalentCRM.Pages.Jobs.IndexModel
+@{
+    ViewData["Title"] = "Jobs";
+}
+
+<div class="page-head">
+    <h1>Jobs <span class="count">@Model.Jobs.Count</span></h1>
+    <a class="btn btn-primary" asp-page="Edit">+ New job</a>
+</div>
+
+<nav class="tabs">
+    <a asp-page="Index" class="@(Model.Status is null ? "active" : "")">All</a>
+    @foreach (var status in Enum.GetValues<JobStatus>())
+    {
+        <a asp-page="Index" asp-route-status="@status" class="@(Model.Status == status ? "active" : "")">@status.ToDisplay()</a>
+    }
+</nav>
+
+<div class="card">
+    <partial name="_JobTable" model="Model.Jobs" />
+</div>

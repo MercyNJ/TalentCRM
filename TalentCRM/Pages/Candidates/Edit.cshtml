@@ -1,0 +1,68 @@
+﻿@page "{id:int?}"
+@model TalentCRM.Pages.Candidates.EditModel
+@{
+    ViewData["Title"] = Model.IsNew ? "New candidate" : $"Edit {Model.Candidate.FullName}";
+}
+
+<div class="page-head">
+    <h1>@ViewData["Title"]</h1>
+</div>
+
+<form method="post" class="card form">
+    <div asp-validation-summary="ModelOnly" class="errors"></div>
+    <input type="hidden" asp-for="Candidate.Id" />
+
+    <div class="form-grid">
+        <div class="field">
+            <label asp-for="Candidate.FirstName"></label>
+            <input asp-for="Candidate.FirstName" />
+            <span asp-validation-for="Candidate.FirstName" class="error"></span>
+        </div>
+        <div class="field">
+            <label asp-for="Candidate.LastName"></label>
+            <input asp-for="Candidate.LastName" />
+            <span asp-validation-for="Candidate.LastName" class="error"></span>
+        </div>
+        <div class="field">
+            <label asp-for="Candidate.Email"></label>
+            <input asp-for="Candidate.Email" />
+            <span asp-validation-for="Candidate.Email" class="error"></span>
+        </div>
+        <div class="field">
+            <label asp-for="Candidate.Phone"></label>
+            <input asp-for="Candidate.Phone" placeholder="+254 7..." />
+            <span asp-validation-for="Candidate.Phone" class="error"></span>
+        </div>
+        <div class="field">
+            <label asp-for="Candidate.Location"></label>
+            <input asp-for="Candidate.Location" />
+            <span asp-validation-for="Candidate.Location" class="error"></span>
+        </div>
+        <div class="field">
+            <label asp-for="Candidate.YearsOfExperience"></label>
+            <input asp-for="Candidate.YearsOfExperience" min="0" max="50" />
+            <span asp-validation-for="Candidate.YearsOfExperience" class="error"></span>
+        </div>
+        <div class="field span-2">
+            <label asp-for="Candidate.Skills"></label>
+            <input asp-for="Candidate.Skills" placeholder="C#, ASP.NET Core, SQL" />
+            <span asp-validation-for="Candidate.Skills" class="error"></span>
+        </div>
+        <div class="field">
+            <label asp-for="Candidate.Status"></label>
+            <select asp-for="Candidate.Status" asp-items="SelectLists.For<CandidateStatus>()"></select>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">@(Model.IsNew ? "Add candidate" : "Save changes")</button>
+        @if (Model.IsNew)
+        {
+            <a class="btn btn-link" asp-page="Index">Cancel</a>
+        }
+        else
+        {
+            <a class="btn btn-link" asp-page="Details" asp-route-id="@Model.Candidate.Id">Cancel</a>
+        }
+    </div>
+</form>

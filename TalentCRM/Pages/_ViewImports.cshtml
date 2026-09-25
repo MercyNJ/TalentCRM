@@ -1,0 +1,9 @@
+﻿@* (web): _ViewImports applies these lines to EVERY page in the Pages folder,
+   so each page doesn't need its own `using` lines.
+   "addTagHelper" switches on Tag Helpers: the asp-page, asp-for, asp-items... attributes you'll see in the HTML. *@
+@using TalentCRM
+@using TalentCRM.Models
+@using TalentCRM.Services
+@using TalentCRM.Helpers
+@namespace TalentCRM.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers

@@ -1,0 +1,52 @@
+@page "{id:int?}"
+@model TalentCRM.Pages.Clients.EditModel
+@{
+    ViewData["Title"] = Model.IsNew ? "New client" : $"Edit {Model.Client.CompanyName}";
+}
+
+<div class="page-head">
+    <h1>@ViewData["Title"]</h1>
+</div>
+
+<form method="post" class="card form">
+    <div asp-validation-summary="ModelOnly" class="errors"></div>
+    <input type="hidden" asp-for="Client.Id" />
+
+    <div class="form-grid">
+        <div class="field">
+            <label asp-for="Client.CompanyName"></label>
+            <input asp-for="Client.CompanyName" />
+            <span asp-validation-for="Client.CompanyName" class="error"></span>
+        </div>
+        <div class="field">
+            <label asp-for="Client.Industry"></label>
+            <input asp-for="Client.Industry" placeholder="e.g. Fintech" />
+            <span asp-validation-for="Client.Industry" class="error"></span>
+        </div>
+        <div class="field">
+            <label asp-for="Client.ContactName"></label>
+            <input asp-for="Client.ContactName" />
+            <span asp-validation-for="Client.ContactName" class="error"></span>
+        </div>
+        <div class="field">
+            <label asp-for="Client.ContactEmail"></label>
+            <input asp-for="Client.ContactEmail" />
+            <span asp-validation-for="Client.ContactEmail" class="error"></span>
+        </div>
+        <div class="field">
+            <label asp-for="Client.ContactPhone"></label>
+            <input asp-for="Client.ContactPhone" />
+            <span asp-validation-for="Client.ContactPhone" class="error"></span>
+        </div>
+        <div class="field">
+            <label asp-for="Client.Location"></label>
+            <input asp-for="Client.Location" />
+            <span asp-validation-for="Client.Location" class="error"></span>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">@(Model.IsNew ? "Add client" : "Save changes")</button>
+        <a class="btn btn-link" asp-page="@(Model.IsNew ? "Index" : "Details")" asp-route-id="@(Model.IsNew ? null : Model.Client.Id)">Cancel</a>
+    </div>
+</form>

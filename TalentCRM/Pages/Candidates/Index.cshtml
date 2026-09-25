@@ -1,0 +1,69 @@
+@page
+@model TalentCRM.Pages.Candidates.IndexModel
+@{
+    ViewData["Title"] = "Candidates";
+}
+
+<div class="page-head">
+    <h1>Candidates <span class="count">@Model.Candidates.Count</span></h1>
+    <a class="btn btn-primary" asp-page="Edit">+ New candidate</a>
+</div>
+
+@* method="get" puts the fields in the URL (?search=...&status=...), so a filtered list can be bookmarked. *@
+<form method="get" class="filters">
+    <input asp-for="Search" placeholder="Search name, email, location or skill" />
+    <select asp-for="Status" asp-items="SelectLists.For<CandidateStatus>()">
+        <option value="">Any status</option>
+    </select>
+    <button class="btn" type="submit">Filter</button>
+    @if (!string.IsNullOrEmpty(Model.Search) || Model.Status is not null)
+    {
+        <a class="btn btn-link" asp-page="Index">Clear</a>
+    }
+</form>
+
+@if (Model.Candidates.Count == 0)
+{
+    <div class="card"><p class="muted">No candidates match. Try a different search.</p></div>
+}
+else
+{
+    <div class="card table-wrap">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Skills</th>
+                    <th class="num">Experience</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th class="num">Active apps</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in Model.Candidates)
+                {
+                    var c = row.Candidate;
+                    <tr>
+                        <td>
+                            <a asp-page="Details" asp-route-id="@c.Id"><strong>@c.FullName</strong></a><br />
+                            <span class="small muted">@c.Email</span>
+                        </td>
+                        <td>
+                            <div class="tags">
+                                @foreach (var skill in c.SkillList)
+                                {
+                                    <span class="tag">@skill</span>
+                                }
+                            </div>
+                        </td>
+                        <td class="num">@c.YearsOfExperience yrs</td>
+                        <td>@c.Location</td>
+                        <td><span class="@c.Status.BadgeClass()">@c.Status.ToDisplay()</span></td>
+                        <td class="num">@row.ActiveApplications</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

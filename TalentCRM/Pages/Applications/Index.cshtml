@@ -1,0 +1,24 @@
+@page
+@model TalentCRM.Pages.Applications.IndexModel
+@{
+    ViewData["Title"] = "Applications";
+}
+
+<div class="page-head">
+    <h1>Applications <span class="count">@Model.Applications.Count</span></h1>
+    <a class="btn btn-primary" asp-page="Create">+ New application</a>
+</div>
+
+<nav class="tabs">
+    <a asp-page="Index" class="@(Model.Stage is null ? "active" : "")">All <span>@Model.Counts.Values.Sum()</span></a>
+    @foreach (var stage in Enum.GetValues<ApplicationStage>())
+    {
+        <a asp-page="Index" asp-route-stage="@stage" class="@(Model.Stage == stage ? "active" : "")">
+            @stage.ToDisplay() <span>@Model.Counts.GetValueOrDefault(stage)</span>
+        </a>
+    }
+</nav>
+
+<div class="card">
+    <partial name="_ApplicationTable" model="Model.Applications" />
+</div>

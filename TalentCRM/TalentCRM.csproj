@@ -1,0 +1,25 @@
+<!--
+  🆕 NEW (.NET): the project file.
+  "Microsoft.NET.Sdk.Web" (instead of the plain "Microsoft.NET.Sdk" used by console apps)
+  pulls in everything ASP.NET Core needs: the web server, Razor Pages, routing, etc.
+  No NuGet packages are needed. Everything used here ships with .NET itself.
+-->
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <!-- .NET 8 is the newest version Visual Studio 2022 supports. -->
+    <TargetFramework>net8.0</TargetFramework>
+    <!-- Nullable reference types ON: the compiler warns about possible nulls (study guide: nullable reference types). -->
+    <Nullable>enable</Nullable>
+    <!-- Implicit usings: common namespaces (System, System.Linq, System.Collections.Generic...) are imported for you. -->
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>TalentCRM</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The JSON data file is created at run time. Keep it out of build output and publish. -->
+    <Content Remove="App_Data\**" />
+    <None Remove="App_Data\**" />
+  </ItemGroup>
+
+</Project>

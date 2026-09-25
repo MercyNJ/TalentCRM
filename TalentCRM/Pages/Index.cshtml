@@ -1,0 +1,126 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Dashboard";
+    var d = Model.Dashboard;
+    // The widest pipeline bar = the biggest stage. Math.Max(1, ...) avoids dividing by zero.
+    int biggestStage = Math.Max(1, d.Pipeline.Max(p => p.Count));
+}
+
+<div class="page-head">
+    <div>
+        <h1>Dashboard</h1>
+        <p class="muted">@DateTime.Now.ToString("dddd, d MMMM yyyy")</p>
+    </div>
+    <div class="actions">
+        <a class="btn" asp-page="/Candidates/Edit">+ Candidate</a>
+        <a class="btn" asp-page="/Jobs/Edit">+ Job</a>
+        <a class="btn btn-primary" asp-page="/Applications/Create">+ Application</a>
+    </div>
+</div>
+
+<section class="stats">
+    <a class="stat" asp-page="/Candidates/Index">
+        <span class="stat-value">@d.Stats.Candidates</span>
+        <span class="stat-label">Candidates</span>
+        <span class="stat-sub">@d.Stats.AvailableCandidates available</span>
+    </a>
+    <a class="stat" asp-page="/Clients/Index">
+        <span class="stat-value">@d.Stats.Clients</span>
+        <span class="stat-label">Clients</span>
+    </a>
+    <a class="stat" asp-page="/Jobs/Index" asp-route-status="Open">
+        <span class="stat-value">@d.Stats.OpenJobs</span>
+        <span class="stat-label">Open jobs</span>
+        <span class="stat-sub">@d.Stats.OpenPositions position(s) to fill</span>
+    </a>
+    <a class="stat" asp-page="/Applications/Index">
+        <span class="stat-value">@d.Stats.ActiveApplications</span>
+        <span class="stat-label">Active applications</span>
+    </a>
+    <a class="stat" asp-page="/Applications/Index" asp-route-stage="Hired">
+        <span class="stat-value">@d.Stats.HiresThisMonth</span>
+        <span class="stat-label">Hires this month</span>
+    </a>
+</section>
+
+<div class="grid-2">
+    <section class="card">
+        <h2>Pipeline</h2>
+        <div class="pipeline">
+            @foreach (var step in d.Pipeline)
+            {
+                <a class="pipeline-row" asp-page="/Applications/Index" asp-route-stage="@step.Stage">
+                    <span class="pipeline-label">@step.Stage.ToDisplay()</span>
+                    <span class="pipeline-track">
+                        <span class="pipeline-bar @step.Stage.BadgeClass()" style="width:@(step.Count * 100 / biggestStage)%"></span>
+                    </span>
+                    <span class="pipeline-count">@step.Count</span>
+                </a>
+            }
+        </div>
+    </section>
+
+    <section class="card">
+        <h2>Interviews in the next 7 days</h2>
+        @if (d.UpcomingInterviews.Count == 0)
+        {
+            <p class="muted">Nothing scheduled.</p>
+        }
+        else
+        {
+            <ul class="list">
+                @foreach (var i in d.UpcomingInterviews)
+                {
+                    <li>
+                        <span class="date-chip">@i.Interview.ScheduledAt.ToString("ddd d MMM")<br /><strong>@i.Interview.ScheduledAt.ToString("HH:mm")</strong></span>
+                        <span>
+                            <a asp-page="/Applications/Details" asp-route-id="@i.Row.Application.Id">@i.Row.Candidate.FullName</a>
+                            <span class="muted">· @i.Row.Job.Title, @i.Row.Client.CompanyName</span><br />
+                            <span class="small muted">@i.Interview.Type.ToDisplay() with @i.Interview.Interviewer</span>
+                        </span>
+                    </li>
+                }
+            </ul>
+        }
+    </section>
+
+    <section class="card">
+        <h2>Open jobs that need candidates</h2>
+        @if (d.JobsNeedingAttention.Count == 0)
+        {
+            <p class="muted">Every open job has at least 2 applicants.</p>
+        }
+        else
+        {
+            <table class="table">
+                <thead><tr><th>Job</th><th>Client</th><th class="num">Applicants</th></tr></thead>
+                <tbody>
+                    @foreach (var j in d.JobsNeedingAttention)
+                    {
+                        <tr>
+                            <td><a asp-page="/Jobs/Details" asp-route-id="@j.Job.Id">@j.Job.Title</a></td>
+                            <td>@j.Client.CompanyName</td>
+                            <td class="num">@j.Applicants</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+
+    <section class="card">
+        <h2>Top skills among available candidates</h2>
+        <div class="tags">
+            @foreach (var s in d.TopSkills)
+            {
+                <a class="tag" asp-page="/Candidates/Index" asp-route-search="@s.Skill">@s.Skill <strong>@s.Candidates</strong></a>
+            }
+        </div>
+    </section>
+</div>
+
+<section class="card">
+    <h2>Recent activity</h2>
+    <partial name="_ApplicationTable" model="d.RecentActivity" />
+</section>

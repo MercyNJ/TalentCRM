@@ -1,0 +1,51 @@
+﻿@page
+@model TalentCRM.Pages.Interviews.IndexModel
+@{
+    ViewData["Title"] = "Interviews";
+}
+
+<div class="page-head">
+    <h1>Interviews <span class="count">@Model.Interviews.Count</span></h1>
+    <p class="small muted">To schedule one, open an application in Screening or Interviewing.</p>
+</div>
+
+<nav class="tabs">
+    <a asp-page="Index" class="@(!Model.All ? "active" : "")">Upcoming</a>
+    <a asp-page="Index" asp-route-all="true" class="@(Model.All ? "active" : "")">All</a>
+</nav>
+
+@if (Model.ByDay.Count == 0)
+{
+    <div class="card"><p class="muted">No interviews to show.</p></div>
+}
+
+@foreach (var day in Model.ByDay)
+{
+    <section class="card">
+        <h2>
+            @(day.Key == DateTime.Today ? "Today" : day.Key == DateTime.Today.AddDays(1) ? "Tomorrow" : day.Key.ToString("dddd d MMMM"))
+        </h2>
+        <div class="table-wrap">
+            <table class="table">
+                <thead>
+                    <tr><th>Time</th><th>Candidate</th><th>Job</th><th>Type</th><th>Interviewer</th><th>Outcome</th><th></th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in day)
+                    {
+                        var i = row.Interview;
+                        <tr>
+                            <td>@i.ScheduledAt.ToString("HH:mm")–@i.EndsAt.ToString("HH:mm")</td>
+                            <td><a asp-page="/Applications/Details" asp-route-id="@row.Row.Application.Id">@row.Row.Candidate.FullName</a></td>
+                            <td>@row.Row.Job.Title<br /><span class="small muted">@row.Row.Client.CompanyName</span></td>
+                            <td>@i.Type.ToDisplay()</td>
+                            <td>@i.Interviewer</td>
+                            <td><span class="@i.Outcome.BadgeClass()">@i.Outcome.ToDisplay()</span></td>
+                            <td><a class="btn btn-small" asp-page="Edit" asp-route-id="@i.Id">Edit</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+}

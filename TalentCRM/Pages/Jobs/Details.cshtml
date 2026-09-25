@@ -1,0 +1,78 @@
+﻿@page "{id:int}"
+@model TalentCRM.Pages.Jobs.DetailsModel
+@{
+    var job = Model.Row.Job;
+    ViewData["Title"] = job.Title;
+}
+
+<p class="crumbs"><a asp-page="Index">Jobs</a> /</p>
+<div class="page-head">
+    <div>
+        <h1>@job.Title <span class="@job.Status.BadgeClass()">@job.Status.ToDisplay()</span></h1>
+        <p class="muted">
+            <a asp-page="/Clients/Details" asp-route-id="@Model.Row.Client.Id">@Model.Row.Client.CompanyName</a>
+            · @job.EmploymentType.ToDisplay()@(job.Location is null ? "" : $" · {job.Location}")
+        </p>
+    </div>
+    <div class="actions">
+        <a class="btn" asp-page="Edit" asp-route-id="@job.Id">Edit</a>
+        @if (job.Status == JobStatus.Open)
+        {
+            <a class="btn btn-primary" asp-page="/Applications/Create" asp-route-jobId="@job.Id">+ Add applicant</a>
+        }
+    </div>
+</div>
+
+<div class="grid-2">
+    <section class="card">
+        <h2>About the role</h2>
+        <dl class="facts">
+            <dt>Salary</dt><dd>@job.SalaryText</dd>
+            <dt>Openings</dt><dd>@Model.Row.Hired of @job.Openings filled</dd>
+            <dt>Posted</dt><dd>@job.CreatedAt.ToString("d MMM yyyy") (@((DateTime.Today - job.CreatedAt.Date).Days) days ago)</dd>
+        </dl>
+        @if (!string.IsNullOrWhiteSpace(job.Description))
+        {
+            <p class="prewrap">@job.Description</p>
+        }
+        <div class="tags">
+            @foreach (var skill in job.RequiredSkillList)
+            {
+                <span class="tag">@skill</span>
+            }
+        </div>
+    </section>
+
+    <section class="card">
+        <h2>Suggested candidates</h2>
+        @if (job.Status != JobStatus.Open)
+        {
+            <p class="muted">This job isn't open.</p>
+        }
+        else if (Model.Suggestions.Count == 0)
+        {
+            <p class="muted">No available candidates match the required skills yet.</p>
+        }
+        else
+        {
+            <ul class="list">
+                @foreach (var s in Model.Suggestions)
+                {
+                    var c = s.Row.Candidate;
+                    <li>
+                        <span>
+                            <a asp-page="/Candidates/Details" asp-route-id="@c.Id">@c.FullName</a>
+                            <span class="small muted">· @s.MatchingSkills of @job.RequiredSkillList.Count skills · @c.YearsOfExperience yrs</span>
+                        </span>
+                        <a class="btn btn-small" asp-page="/Applications/Create" asp-route-jobId="@job.Id" asp-route-candidateId="@c.Id">Add</a>
+                    </li>
+                }
+            </ul>
+        }
+    </section>
+</div>
+
+<section class="card">
+    <h2>Applicants</h2>
+    <partial name="_ApplicationTable" model="Model.Applicants" />
+</section>

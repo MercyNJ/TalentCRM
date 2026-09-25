@@ -1,0 +1,41 @@
+﻿@{
+    // Which menu item should be highlighted? RouteData tells us the current page, e.g. "/Candidates/Details".
+    string currentPage = ViewContext.RouteData.Values["page"] as string ?? "";
+
+    string NavClass(string section) =>
+        (section == "/Index" ? currentPage == "/Index" : currentPage.StartsWith(section)) ? "active" : "";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] · TalentCRM</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="shell">
+        <aside class="sidebar">
+            <a class="brand" asp-page="/Index">Talent<span>CRM</span></a>
+            <nav>
+                <a asp-page="/Index" class="@NavClass("/Index")">Dashboard</a>
+                <a asp-page="/Candidates/Index" class="@NavClass("/Candidates")">Candidates</a>
+                <a asp-page="/Clients/Index" class="@NavClass("/Clients")">Clients</a>
+                <a asp-page="/Jobs/Index" class="@NavClass("/Jobs")">Jobs</a>
+                <a asp-page="/Applications/Index" class="@NavClass("/Applications")">Applications</a>
+                <a asp-page="/Interviews/Index" class="@NavClass("/Interviews")">Interviews</a>
+            </nav>
+            <p class="sidebar-note">Learning project · data saved in App_Data/talentcrm-data.json</p>
+        </aside>
+
+        <main class="content">
+            @if (TempData["Message"] is string message)
+            {
+                <div class="flash">@message</div>
+            }
+
+            @RenderBody()
+        </main>
+    </div>
+</body>
+</html>

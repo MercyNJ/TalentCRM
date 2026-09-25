@@ -1,0 +1,41 @@
+﻿@page "{id:int}"
+@model TalentCRM.Pages.Clients.DetailsModel
+@{
+    var c = Model.Client;
+    ViewData["Title"] = c.CompanyName;
+}
+
+<p class="crumbs"><a asp-page="Index">Clients</a> /</p>
+<div class="page-head">
+    <div>
+        <h1>@c.CompanyName</h1>
+        <p class="muted">@(c.Industry ?? "Industry not set")@(c.Location is null ? "" : $" · {c.Location}")</p>
+    </div>
+    <div class="actions">
+        <a class="btn" asp-page="Edit" asp-route-id="@c.Id">Edit</a>
+        <a class="btn btn-primary" asp-page="/Jobs/Edit" asp-route-clientId="@c.Id">+ New job</a>
+    </div>
+</div>
+
+<section class="card">
+    <h2>Contact</h2>
+    <dl class="facts">
+        <dt>Contact person</dt><dd>@c.ContactName</dd>
+        <dt>Email</dt><dd>@c.ContactEmail</dd>
+        <dt>Phone</dt><dd>@(c.ContactPhone ?? "—")</dd>
+        <dt>Client since</dt><dd>@c.CreatedAt.ToString("d MMM yyyy")</dd>
+    </dl>
+</section>
+
+<section class="card">
+    <h2>Jobs</h2>
+    <partial name="_JobTable" model="Model.Jobs" />
+</section>
+
+@if (Model.Jobs.Count == 0)
+{
+    <form method="post" asp-page-handler="Delete" asp-route-id="@c.Id" class="danger-zone"
+          onsubmit="return confirm('Delete this client? This cannot be undone.');">
+        <button type="submit" class="btn btn-danger">Delete client</button>
+    </form>
+}

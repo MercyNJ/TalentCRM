@@ -1,0 +1,40 @@
+@page
+@model TalentCRM.Pages.Applications.CreateModel
+@{
+    ViewData["Title"] = "New application";
+}
+
+<div class="page-head">
+    <h1>New application</h1>
+</div>
+
+<form method="post" class="card form">
+    <div asp-validation-summary="ModelOnly" class="errors"></div>
+
+    <div class="form-grid">
+        <div class="field span-2">
+            <label asp-for="Input.CandidateId"></label>
+            <select asp-for="Input.CandidateId" asp-items="Model.CandidateOptions">
+                <option value="0">Choose a candidate</option>
+            </select>
+            <span asp-validation-for="Input.CandidateId" class="error"></span>
+        </div>
+        <div class="field span-2">
+            <label asp-for="Input.JobId"></label>
+            <select asp-for="Input.JobId" asp-items="Model.JobOptions">
+                <option value="0">Choose an open job</option>
+            </select>
+            <span asp-validation-for="Input.JobId" class="error"></span>
+        </div>
+        <div class="field span-2">
+            <label asp-for="Input.Notes"></label>
+            <textarea asp-for="Input.Notes" rows="3" placeholder="How did they come to us? Anything the client should know?"></textarea>
+            <span asp-validation-for="Input.Notes" class="error"></span>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Create application</button>
+        <a class="btn btn-link" asp-page="Index">Cancel</a>
+    </div>
+</form>

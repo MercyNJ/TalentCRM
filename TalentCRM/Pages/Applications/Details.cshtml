@@ -1,0 +1,94 @@
+﻿@page "{id:int}"
+@model TalentCRM.Pages.Applications.DetailsModel
+@{
+    var app = Model.Row.Application;
+    ViewData["Title"] = $"{Model.Row.Candidate.FullName} · {Model.Row.Job.Title}";
+    int currentStep = Array.IndexOf(TalentCRM.Pages.Applications.DetailsModel.PipelineSteps, app.Stage);
+}
+
+<p class="crumbs"><a asp-page="Index">Applications</a> /</p>
+<div class="page-head">
+    <div>
+        <h1>
+            <a asp-page="/Candidates/Details" asp-route-id="@Model.Row.Candidate.Id">@Model.Row.Candidate.FullName</a>
+            <span class="muted">for</span>
+            <a asp-page="/Jobs/Details" asp-route-id="@Model.Row.Job.Id">@Model.Row.Job.Title</a>
+        </h1>
+        <p class="muted">@Model.Row.Client.CompanyName · applied @app.CreatedAt.ToString("d MMM yyyy")</p>
+    </div>
+    <span class="@app.Stage.BadgeClass() badge-large">@app.Stage.ToDisplay()</span>
+</div>
+
+<ol class="steps">
+    @for (int i = 0; i < DetailsModel.PipelineSteps.Length; i++)
+    {
+        var step = DetailsModel.PipelineSteps[i];
+        string css = i < currentStep ? "done" : i == currentStep ? "current" : "";
+        <li class="@css">@step.ToDisplay()</li>
+    }
+</ol>
+
+<div class="grid-2">
+    <section class="card">
+        <h2>Move to</h2>
+        @if (Model.NextStages.Count == 0)
+        {
+            <p class="muted">This application is closed (@app.Stage.ToDisplay().ToLower()). No further moves.</p>
+        }
+        else
+        {
+            <div class="actions">
+                @foreach (var next in Model.NextStages)
+                {
+                    <form method="post" asp-page-handler="Move" asp-route-id="@app.Id">
+                        <input type="hidden" name="stage" value="@next" />
+                        <button type="submit" class="btn @(next.IsFinal() && next != ApplicationStage.Hired ? "btn-danger-outline" : "btn-primary")">
+                            @next.ToDisplay()
+                        </button>
+                    </form>
+                }
+            </div>
+            <p class="small muted">Moving to Hired marks the candidate as Placed. When the last opening is filled, the job is marked Filled and other active applications are closed.</p>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(app.Notes))
+        {
+            <h3>Notes</h3>
+            <p class="prewrap">@app.Notes</p>
+        }
+    </section>
+
+    <section class="card">
+        <div class="card-head">
+            <h2>Interviews</h2>
+            @if (Model.CanSchedule)
+            {
+                <a class="btn btn-small btn-primary" asp-page="/Interviews/Edit" asp-route-applicationId="@app.Id">+ Schedule</a>
+            }
+        </div>
+        @if (Model.Interviews.Count == 0)
+        {
+            <p class="muted">No interviews yet.@(Model.CanSchedule ? "" : " Interviews can be scheduled in the Screening and Interviewing stages.")</p>
+        }
+        else
+        {
+            <ul class="list">
+                @foreach (var i in Model.Interviews)
+                {
+                    <li>
+                        <span class="date-chip">@i.ScheduledAt.ToString("d MMM")<br /><strong>@i.ScheduledAt.ToString("HH:mm")</strong></span>
+                        <span>
+                            @i.Type.ToDisplay() with @i.Interviewer
+                            <span class="@i.Outcome.BadgeClass()">@i.Outcome.ToDisplay()</span>
+                            @if (!string.IsNullOrWhiteSpace(i.Feedback))
+                            {
+                                <br /><span class="small muted prewrap">@i.Feedback</span>
+                            }
+                        </span>
+                        <a class="btn btn-small" asp-page="/Interviews/Edit" asp-route-id="@i.Id">Edit</a>
+                    </li>
+                }
+            </ul>
+        }
+    </section>
+</div>
