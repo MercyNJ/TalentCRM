@@ -53,11 +53,3 @@ TalentCRM/
 ├── Pages/        # Razor Pages
 └── wwwroot/      # CSS and static files
 ```
-
-## Future Improvements
-
-* Entity Framework Core + SQL database
-* Authentication
-* Automated tests
-* REST API
-* Recruitment analytics
